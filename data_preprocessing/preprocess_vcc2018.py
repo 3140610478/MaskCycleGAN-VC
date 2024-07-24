@@ -12,8 +12,8 @@ import random
 import numpy as np
 from tqdm import tqdm
 
-import librosa
-from librosa.filters import mel as librosa_mel_fn
+from librosa import load as librosa_load
+from librosa.filters import mel as librosa_mel
 
 import torch
 import torch.nn as nn
@@ -30,7 +30,7 @@ def normalize_mel(wavspath):
 
     mel_list = list()
     for wavpath in tqdm(wav_files, desc='Preprocess wav to mel'):
-        wav_orig, _ = librosa.load(wavpath, sr=SAMPLING_RATE, mono=True)
+        wav_orig, _ = librosa_load(wavpath, sr=SAMPLING_RATE, mono=True)
         spec = vocoder(torch.tensor([wav_orig]))
 
         if spec.shape[-1] >= 64:    # training sample consists of 64 randomly cropped frames
@@ -87,9 +87,9 @@ def preprocess_dataset(data_path, speaker_id, cache_folder='./cache/'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--data_directory', type=str, default='vcc2018/vcc2018_training',
+    parser.add_argument('--data_directory', type=str, default='../vcc2018/vcc2018_training',
                         help='Directory holding VCC2018 dataset.')
-    parser.add_argument('--preprocessed_data_directory', type=str, default='vcc2018_preprocessed/vcc2018_training',
+    parser.add_argument('--preprocessed_data_directory', type=str, default='../vcc2018_preprocessed/vcc2018_training',
                         help='Directory holding preprocessed VCC2018 dataset.')
     parser.add_argument('--speaker_ids', nargs='+', type=str, default=['VCC2SM3', 'VCC2TF1'],
                         help='Source speaker id from VCC2018.')
